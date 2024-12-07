@@ -14,7 +14,7 @@ async function funIngresar(){
         const {data} =await authService.login(usuario.value)
         console.log(data)
         localStorage.setItem("access_token", data.access_token);
-        await router.push("/services");
+        await router.push("/admin/perfil");
     }catch(err){
         if(err.response.data.errors){
             erros.value = err.response.data.errors;
