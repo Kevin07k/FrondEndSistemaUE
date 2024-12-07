@@ -8,7 +8,7 @@ export function Api(){
         baseURL: url_base,
         headers: {
             'Accept': 'application/json',
-            'authorization': 'Bearer ' + token,
+            'Authorization': 'Bearer ' + token,
         }
     });
     return api;
