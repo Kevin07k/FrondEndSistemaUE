@@ -11,5 +11,20 @@ export function Api(){
             'Authorization': 'Bearer ' + token,
         }
     });
+
+    // Interceptor: Verifica salida y entrada de peticiones(manipulacion de errores)
+    api.interceptors.response.use(
+        (response) => {
+            return response;
+        },
+        (error) => {
+            if (error.response.status === 401) {
+                localStorage.removeItem("access_token");
+                window.location.href = "/login";
+                // console.log("No autorizado");
+            }
+            return Promise.reject(error);
+        }
+    )
     return api;
 }

@@ -1,7 +1,6 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import usuarioService from "../../../services/usuario.service.js";
-import Swal from 'sweetalert2'
 // import 'sweetalert2/src/sweetalert2.scss'
 
 
@@ -33,18 +32,8 @@ async function saveUser() {
     try {
         if (user.value.id) {
             await usuarioService.update(user.value.id, user.value);
-            await Swal.fire({
-                title: "Usuario Registrado",
-                text: "Para continuar presion ok!",
-                icon: "success"
-            });
         } else {
             await usuarioService.store(user.value);
-            await Swal.fire({
-                title: "Usuario Registrado",
-                text: "Para continuar presion ok!",
-                icon: "success"
-            });
         }
     } catch (err) {
         errors.value = err.response.data.errors;
@@ -59,11 +48,6 @@ async function funUpdate(usuario) {
 async function funDelete(userId) {
     if (confirm("¿Esta seguro de eliminar este usuario?")) {
         await usuarioService.destroy(userId);
-        await Swal.fire({
-            title: "Usuario Eliminado",
-            text: "Para continuar presion ok!",
-            icon: "success"
-        });
     }
     await getUsers();
 }

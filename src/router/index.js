@@ -5,6 +5,7 @@ import Login from "../views/auth/Login.vue";
 import User from "../views/admin/User/User.vue";
 import Profile from "../views/admin/Profile/Profile.vue";
 import NotFound from "../views/errors/NotFound.vue";
+import AppLayout from "@/layout/AppLayout.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,10 +26,10 @@ const router = createRouter({
         },
         {
             path: '/admin',
-            component: ,
+            component: AppLayout,
             children: [
                 {
-                    path: '/admin/perfil',
+                    path: '/perfil',
                     component: Profile,
                     name: 'Perfil',
                     meta:{
@@ -36,7 +37,7 @@ const router = createRouter({
                     }
                 },
                 {
-                    path: '/admin/usuario',
+                    path: '/usuario',
                     component: User,
                     name: 'Usuario',
                     meta: { requireAuth: true }
