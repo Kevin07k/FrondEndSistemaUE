@@ -1,7 +1,7 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import usuarioService from "../../../services/usuario.service.js";
-// import 'sweetalert2/src/sweetalert2.scss'
+
 
 
 // Declarar variables
