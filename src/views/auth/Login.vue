@@ -1,36 +1,52 @@
 <script setup>
-// import axios from "axios"
 import authService from "../../services/auth.service.js";
 import {ref} from "vue";
 import {useRouter} from "vue-router";
 import FloatingConfigurator from '@/assets/FloatingConfigurator.vue';
+import {useToast} from "primevue";
+import {Form} from '@primevue/forms';
 
 const router = useRouter();
+const toast = useToast();
 
 const user = ref({email: "", password: ""})
-const erros = ref({})
+const errors = ref({})
+const errorEmail = ref(false)
+const errorPassword = ref(false)
 
-async function funIngresar(){
-    try{
-        const {data} =await authService.login(user.value)
-        console.log(data)
+async function funIngresar() {
+    try {
+        const {data} = await authService.login(user.value)
         localStorage.setItem("access_token", data.access_token);
-        await router.push("/admin/perfil");
-    }catch(err){
-        if(err.response.data.errors){
-            erros.value = err.response.data.errors;
-        }else{
-            alert(err.response.data.message)
+        await router.push("/perfil");
+    } catch (err) {
+        if (err.response.data.errors) {
+            errors.value = err.response.data.errors;
+            if (errors.value.email) {
+                errorEmail.value = true;
+                setTimeout(() => {
+                    errorEmail.value = false;
+                }, 3500);
+            }
+            if (errors.value.password) {
+                errorPassword.value = true;
+                setTimeout(() => {
+                    errorPassword.value = false;
+                }, 3500);
+            }
+        } else {
+            toast.add({ severity: 'error', summary: 'Error al ingresar', detail: `${err.response.data.message}`, life: 3000 });
         }
     }
 }
 </script>
 
 <template>
-    
-    <FloatingConfigurator />
-    <form @submit.prevent="funIngresar()">
-        <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
+    <FloatingConfigurator/>
+    <Toast/>
+    <Form @submit="funIngresar()">
+        <div
+            class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
             <div class="flex flex-col items-center justify-center">
                 <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                     <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
@@ -43,7 +59,9 @@ async function funIngresar(){
                                     fill="var(--primary-color)"
                                 />
                                 <mask id="mask0_1413_1551" style="mask-type: alpha" maskUnits="userSpaceOnUse" x="0" y="8" width="54" height="11">
-                                    <path d="M27 18.3652C10.5114 19.1944 0 8.88892 0 8.88892C0 8.88892 16.5176 14.5866 27 14.5866C37.4824 14.5866 54 8.88892 54 8.88892C54 8.88892 43.4886 17.5361 27 18.3652Z" fill="var(--primary-color)" />
+                                    <path
+                                        d="M27 18.3652C10.5114 19.1944 0 8.88892 0 8.88892C0 8.88892 16.5176 14.5866 27 14.5866C37.4824 14.5866 54 8.88892 54 8.88892C54 8.88892 43.4886 17.5361 27 18.3652Z"
+                                        fill="var(--primary-color)"/>
                                 </mask>
                                 <g mask="url(#mask0_1413_1551)">
                                     <path
@@ -57,46 +75,27 @@ async function funIngresar(){
                         </div>
                         <div>
                             <label for="email1" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Correo</label>
-                            <InputText id="email1" type="email" placeholder="Correo electronico" class="w-full md:w-[30rem] mb-8" v-model="user.email"  />
-                            <p v-if="emailError" class="text-red-500">{{ emailError }}</p>git remote -v
-                            {{erros.email}}
-                            
+                            <InputText id="email1" type="email" placeholder="Correo electronico" class="w-full md:w-[30rem] mb-5" v-model="user.email"/>
+                            <Message v-if="errorEmail" severity="error" size="small" :life="3000">
+                                {{ errors.email[0] }}
+                            </Message>
                             <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
-                            <Password id="password1" v-model="user.password" placeholder="Contraseña" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
-                            {{erros.password}}
+                            <Password id="password1" placeholder="Contraseña" :toggleMask="true" class="mb-4" v-model="user.password" fluid :feedback="false"></Password>
+                            <Message v-if="errorPassword" severity="error" size="small" :life="3000">
+                                {{ errors.password[0] }}
+                            </Message>
                             
-                            <div class="flex items-center justify-end mt-5 mb-8 gap- m-2">
-                                <!--                            <div class="flex items-center">
-                                                                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                                                                <label for="rememberme1">Recuerdame</label>
-                                                            </div>-->
+                            <div class="flex items-center justify-between mt-5 mb-8 gap- m-2">
                                 <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidaste tu contraseña?</span>
+<!--                                <Button class="w-60" variant="outlined" as="router-link" to="/register">Registrate</Button>-->
+<!--                                <button class="button.outlined.success.hover.background">Resgistrate</button>-->
                             </div>
-                            <Button label="Iniciar Sesion" class="w-full" @click="funIngresar()"></Button>
+                            <Button label="Iniciar Sesion" class="w-full" type="submit"></Button>
+                            
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </form>
-    
-    
-    
-    <pre>{{ user }}</pre>
-    <h1>Login</h1>
-    <form @submit.prevent="funIngresar()">
-        <label for="email">INGRESE SU CORREO</label>
-        <input type="email" id="email" required v-model="user.email">
-        
-        <br>
-        <label for="password">INGRESE SU CONTRASEÑA</label>
-        <input type="password" id="password" required v-model="user.password">
-        <br>
-        <input type="submit" value="Ingresar">
-        <input type="" value="Olvidaste tu contraseña">
-    </form>
+    </Form>
 </template>
-
-<style scoped>
-
-</style>
